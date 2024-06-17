@@ -4075,7 +4075,7 @@ uint64_t picoquic_current_time()
     * Account for microseconds elapsed between 1601 and 1970.
     */
     now -= 11644473600000000ULL;
-#elif defined(CLOCK_MONOTONIC)
+#elif defined(CLOCK_MONOTONIC) && defined(USE_CLOCK_MONOTONIC)
     /*
     * Use CLOCK_MONOTONIC if exists (more accurate)
     */

@@ -24,6 +24,8 @@
 #include <string.h>
 #include "cc_common.h"
 
+#include "sat_utils.h"
+
 /*
 Implementation of the BBR1 algorithm, tuned for Picoquic.
 
@@ -1253,10 +1255,24 @@ void picoquic_bbr1_observe(picoquic_path_t* path_x, uint64_t* cc_state, uint64_t
 
 #define picoquic_bbr1_ID "bbr1" /* BBR1 */
 
+static void picoquic_bbr1_sat_aware_notify(
+    picoquic_cnx_t* cnx,
+    picoquic_path_t* path_x,
+    picoquic_congestion_notification_t notification,
+    picoquic_per_ack_state_t* ack_state,
+    uint64_t current_time)
+{
+    // Don't notify the cc algorithm during handover
+    // TODO: Make this more granular (allow some types of notifications but not others)
+    if (!picoquic_check_handover()) {
+        picoquic_bbr1_notify(cnx, path_x, notification, ack_state, current_time);
+    }
+}
+
 picoquic_congestion_algorithm_t picoquic_bbr1_algorithm_struct = {
     picoquic_bbr1_ID, PICOQUIC_CC_ALGO_NUMBER_BBR1,
     picoquic_bbr1_init,
-    picoquic_bbr1_notify,
+    picoquic_bbr1_sat_aware_notify,
     picoquic_bbr1_delete,
     picoquic_bbr1_observe
 };

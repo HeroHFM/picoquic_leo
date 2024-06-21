@@ -109,7 +109,8 @@ set(PICOQUIC_LIBRARY_FILES
     picoquic/tls_api.c
     picoquic/transport.c
     picoquic/unified_log.c
-    picoquic/util.c)
+    picoquic/util.c
+    picoquic/sat_utils.c)
 
 set(PICOQUIC_CORE_HEADERS
      picoquic/picoquic.h

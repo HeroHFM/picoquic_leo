@@ -3,8 +3,11 @@
 #include "sat_utils.h"
 
 #include <sys/time.h>
+#include <stdint.h>
 #include <time.h>
 #include <math.h>
+
+static const uint64_t s_to_us = 1000000ull;
 
 // TODO: Reconfigure to use a reference time and current_time
 bool picoquic_check_handover()
@@ -12,24 +15,12 @@ bool picoquic_check_handover()
 	struct timeval tv;
     (void)gettimeofday(&tv, NULL);
 
-    const unsigned int margin = 1;
-    const int second = tv.tv_sec % 60;
+    const uint64_t usecond = ((tv.tv_sec * s_to_us) + tv.tv_usec) % (60 * s_to_us);
 
     for (size_t i = 0; i < SL_HANDOVER_COUNT; ++i) {
-    	if (abs(SL_HANDOVER_INTERVALS[i] - second) <= margin) return true;
+    	if (abs((SL_HANDOVER_INTERVALS[i]  * s_to_us) - usecond) <= MARGIN) return true;
     }
 
     return false;
 
-    // switch (tv.tv_sec % 60)
-    // {
-    // 	case 12:
-    // 	case 27:
-    // 	case 42:
-    // 	case 57:
-    // 		return true;
-    // 		break;
-    // }
-
-    // return false;
 }

@@ -24,6 +24,8 @@
 #include <string.h>
 #include "cc_common.h"
 
+#include "sat_utils.h"
+
 typedef enum {
     picoquic_cubic_alg_slow_start = 0,
     picoquic_cubic_alg_recovery,
@@ -247,6 +249,8 @@ static void picoquic_cubic_notify(
             case picoquic_congestion_notification_repeat:
             case picoquic_congestion_notification_ecn_ec:
             case picoquic_congestion_notification_timeout:
+                if (picoquic_check_handover(ack_state->lost_packet_sent_time)) { return; }
+
                 /* For compatibility with Linux-TCP deployments, we implement a filter so
                  * Cubic will only back off after repeated losses, not just after a single loss.
                  */
@@ -336,6 +340,8 @@ static void picoquic_cubic_notify(
             case picoquic_congestion_notification_repeat:
             case picoquic_congestion_notification_ecn_ec:
             case picoquic_congestion_notification_timeout:
+                if (picoquic_check_handover(ack_state->lost_packet_sent_time)) { return; }
+
                 /* For compatibility with Linux-TCP deployments, we implement a filter so
                  * Cubic will only back off after repeated losses, not just after a single loss.
                  */
@@ -387,6 +393,8 @@ static void picoquic_cubic_notify(
             case picoquic_congestion_notification_repeat:
             case picoquic_congestion_notification_ecn_ec:
             case picoquic_congestion_notification_timeout:
+
+                if (picoquic_check_handover(ack_state->lost_packet_sent_time)) { return; }
                 /* For compatibility with Linux-TCP deployments, we implement a filter so
                  * Cubic will only back off after repeated losses, not just after a single loss.
                  */

@@ -25,9 +25,12 @@
 #include "cc_common.h"
 #include "picoquic_utils.h"
 
+#include "sat_utils.h"
+
 #define RTTJitterBuffer On
 #define RTTJitterBufferStartup On
 #define RTTJitterBufferProbe On
+
 
 /*
 Implementation of the BBR3 algorithm, tuned for Picoquic.
@@ -2223,8 +2226,11 @@ static void picoquic_bbr_notify(
              * Consider removing it from the API once other CC algorithms are updated.  */
             break;
         case picoquic_congestion_notification_acknowledgement:
+            if (picoquic_check_handover(ack_state->lost_packet_sent_time)) { return; }
             BBRExitLostFeedback(bbr_state, path_x);
+
             picoquic_bbr_notify_ack(bbr_state, path_x, ack_state, current_time);
+
             if (bbr_state->state == picoquic_bbr_alg_startup_long_rtt) {
                 picoquic_update_pacing_data(cnx, path_x, 1);
             }
